@@ -1,10 +1,9 @@
 public class Bakery extends Thread {
 
-	// Variables for the threads.
-	public int thread_id; // The id of the current thread.
+	public int thread_id;
 	public static final int countToThis = 10;
 	public static final int numberOfThreads = 3;
-	public static volatile int count = 0; // A simple counter for the testing.
+	public static volatile int count = 0; 
 	private static volatile boolean[] choosing = new boolean[numberOfThreads];
 	private static volatile int[] ticket = new int[numberOfThreads];
 
@@ -18,21 +17,18 @@ public class Bakery extends Thread {
 		for (int i = 0; i < countToThis; i++) {
 
 			lock(thread_id);
-			// Start of critical section.
 			count = count + 1;
 			System.out.println("I am " + thread_id + " and count is: " + count);
 
-			// Wait, in order to cause a race condition among the threads.
 			try {
 				sleep((int) (Math.random() * scale));
 			} catch (InterruptedException e) {
-				/* nothing */ }
-			// End of critical section.
+				 }
 			unlock(thread_id);
 
-		} // for
+		}
 
-	} // run method
+	}
 
 	public void lock(int id) {
 		choosing[id] = true;
@@ -45,11 +41,11 @@ public class Bakery extends Thread {
 			if (j == id)
 				continue;
 			while (choosing[j]) {
-				/* nothing */ }
+				}
 			while (ticket[j] != 0 && (ticket[id] > ticket[j] || (ticket[id] == ticket[j] && id > j))) {
-				/* nothing */ }
+				}
 
-		} // for
+		}
 	}
 
 	private void unlock(int id) {
@@ -70,20 +66,17 @@ public class Bakery extends Thread {
 
 	public static void main(String[] args) {
 
-		// Initialization of the global variables (it is not necessary at all).
 		for (int i = 0; i < numberOfThreads; i++) {
 			choosing[i] = false;
 			ticket[i] = 0;
 		}
 
-		Bakery[] threads = new Bakery[numberOfThreads]; // Array of threads.
-
-		// Initialize the threads.
+		Bakery[] threads = new Bakery[numberOfThreads];
+		
 		for (int i = 0; i < threads.length; i++) {
 			threads[i] = new Bakery(i);
 			threads[i].start();
 		}
-		// Wait all threads to finish.
 		for (int i = 0; i < threads.length; i++) {
 			try {
 				threads[i].join();
